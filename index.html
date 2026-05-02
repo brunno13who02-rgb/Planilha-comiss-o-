@@ -2,58 +2,367 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Planilha Financeira</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f172a">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
-body{font-family:sans-serif;background:#0f172a;color:white;text-align:center;padding:20px}
-input,button{padding:10px;margin:10px;border-radius:8px;border:none}
-button{background:#6366f1;color:white}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{
+background:linear-gradient(135deg,#0f172a,#020617);
+color:#fff;
+min-height:100vh;
+}
+
+header{
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(20px);
+padding:20px;
+text-align:center;
+font-size:26px;
+font-weight:600;
+letter-spacing:1px;
+border-bottom:1px solid rgba(255,255,255,0.1);
+box-shadow:0 5px 20px rgba(0,0,0,0.4);
+}
+
+nav{
+display:flex;
+justify-content:center;
+gap:15px;
+padding:20px;
+}
+
+nav button{
+background:rgba(255,255,255,0.06);
+border:1px solid rgba(255,255,255,0.1);
+color:#fff;
+padding:12px 25px;
+cursor:pointer;
+font-size:14px;
+border-radius:30px;
+transition:0.3s;
+position:relative;
+overflow:hidden;
+}
+
+nav button::after{
+content:"";
+position:absolute;
+width:0;height:100%;
+left:0;top:0;
+background:linear-gradient(135deg,#22d3ee,#6366f1);
+transition:0.4s;
+z-index:0;
+}
+
+nav button:hover::after{
+width:100%;
+}
+
+nav button span{
+position:relative;
+z-index:1;
+}
+
+nav button.active{
+background:linear-gradient(135deg,#22d3ee,#6366f1);
+box-shadow:0 0 15px rgba(99,102,241,0.6);
+}
+
+.container{
+max-width:950px;
+margin:30px auto;
+padding:30px;
+background:rgba(255,255,255,0.04);
+border-radius:20px;
+backdrop-filter:blur(25px);
+box-shadow:0 20px 50px rgba(0,0,0,0.6);
+animation:fadeIn 0.6s ease;
+}
+
+.hidden{display:none;}
+
+h2{
+margin-bottom:20px;
+font-weight:500;
+letter-spacing:0.5px;
+}
+
+label{
+font-size:13px;
+opacity:0.7;
+}
+
+input{
+width:100%;
+padding:14px;
+margin-bottom:18px;
+border:none;
+border-radius:12px;
+background:rgba(255,255,255,0.06);
+color:white;
+outline:none;
+transition:0.3s;
+}
+
+input:focus{
+background:rgba(255,255,255,0.12);
+box-shadow:0 0 15px #6366f1;
+}
+
+button{
+background:linear-gradient(135deg,#22d3ee,#6366f1);
+color:white;
+border:none;
+padding:12px 22px;
+border-radius:12px;
+cursor:pointer;
+transition:0.3s;
+font-weight:500;
+}
+
+button:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 25px rgba(99,102,241,0.5);
+}
+
+#abas{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:20px;
+}
+
+#abas button{
+background:rgba(255,255,255,0.08);
+border-radius:20px;
+padding:8px 15px;
+font-size:13px;
+transition:0.3s;
+}
+
+#abas button:hover{
+background:#6366f1;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+overflow:hidden;
+border-radius:15px;
+}
+
+th,td{
+padding:14px;
+text-align:center;
+}
+
+th{
+background:linear-gradient(135deg,#22d3ee,#6366f1);
+font-weight:500;
+}
+
+tbody tr{
+background:rgba(255,255,255,0.04);
+transition:0.2s;
+}
+
+tbody tr:hover{
+background:rgba(255,255,255,0.08);
+transform:scale(1.01);
+}
+
+tfoot td{
+font-weight:bold;
+background:rgba(99,102,241,0.15);
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(15px);}
+to{opacity:1;transform:translateY(0);}
+}
 </style>
 </head>
+
 <body>
 
-<h1>📊 Planilha Financeira</h1>
+<header>ðŸ“Š Planilha Financeira</header>
 
-<input type="month" id="mes">
-<input type="number" id="valor" placeholder="Valor">
+<nav>
+<button class="active" onclick="showPage('entrada',event)"><span>Entrada</span></button>
+<button onclick="showPage('relatorio',event)"><span>RelatÃ³rios</span></button>
+</nav>
+
+<div class="container" id="entrada">
+
+<h2>Novo LanÃ§amento</h2>
+
+<label>MÃªs/Ano</label>
+<input type="month" id="mesAno">
+
+<label>Valor</label>
+<input type="number" id="valor" step="0.01">
+
 <button onclick="salvar()">Salvar</button>
 
-<h2>Registros</h2>
-<ul id="lista"></ul>
+</div>
+
+<div class="container hidden" id="relatorio">
+
+<h2>RelatÃ³rios</h2>
+
+<div id="abas"></div>
+<div id="conteudo"></div>
+
+</div>
 
 <script>
-let dados = JSON.parse(localStorage.getItem("dados") || "{}");
+
+function carregar(){
+const dados = localStorage.getItem("dados");
+return dados ? JSON.parse(dados) : {};
+}
+
+function salvarDados(d){
+localStorage.setItem("dados",JSON.stringify(d));
+}
+
+let registros = carregar();
+
+function showPage(page,event){
+
+document.getElementById("entrada").classList.add("hidden");
+document.getElementById("relatorio").classList.add("hidden");
+
+document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+
+document.getElementById(page).classList.remove("hidden");
+event.target.classList.add("active");
+
+if(page==="relatorio") atualizarRelatorio();
+}
 
 function salvar(){
-const mes = document.getElementById("mes").value;
+
+const mes = document.getElementById("mesAno").value;
 const valor = parseFloat(document.getElementById("valor").value);
 
-if(!mes || isNaN(valor)) return alert("Preencha");
-
-if(!dados[mes]) dados[mes]=[];
-dados[mes].push(valor);
-
-localStorage.setItem("dados", JSON.stringify(dados));
-render();
+if(!mes || isNaN(valor)){
+alert("Preencha os campos");
+return;
 }
 
-function render(){
-const lista = document.getElementById("lista");
-lista.innerHTML="";
-for(let mes in dados){
-dados[mes].forEach(v=>{
-lista.innerHTML += `<li>${mes} - R$ ${v}</li>`;
+if(!registros[mes]) registros[mes] = [];
+
+registros[mes].push(valor);
+
+salvarDados(registros);
+
+document.getElementById("mesAno").value="";
+document.getElementById("valor").value="";
+
+alert("Valor salvo");
+}
+
+function atualizarRelatorio(){
+
+const abas = document.getElementById("abas");
+const conteudo = document.getElementById("conteudo");
+
+abas.innerHTML="";
+conteudo.innerHTML="";
+
+Object.keys(registros).forEach((mes,index)=>{
+
+const btn = document.createElement("button");
+btn.innerText = mes;
+btn.onclick = ()=>mostrarMes(mes);
+abas.appendChild(btn);
+
+const div = document.createElement("div");
+div.id="mes-"+mes;
+
+if(index!==0) div.classList.add("hidden");
+
+let linhas="";
+
+registros[mes].forEach(v=>{
+linhas+=`<tr><td>${mes}</td><td>R$ ${v.toFixed(2)}</td></tr>`;
+});
+
+const total = registros[mes].reduce((a,b)=>a+b,0);
+
+div.innerHTML=`
+
+<table>
+
+<thead>
+<tr>
+<th>MÃªs</th>
+<th>Valor</th>
+</tr>
+</thead>
+
+<tbody>
+${linhas}
+</tbody>
+
+<tfoot>
+
+<tr>
+<td>Total</td>
+<td id="total-${mes}">R$ ${total.toFixed(2)}</td>
+</tr>
+
+<tr>
+<td>ComissÃ£o (%)</td>
+<td>
+<input type="number" id="porc-${mes}" placeholder="%">
+<button onclick="calcular('${mes}')">Calcular</button>
+</td>
+</tr>
+
+<tr>
+<td>Valor da ComissÃ£o</td>
+<td id="comissao-${mes}">-</td>
+</tr>
+
+</tfoot>
+
+</table>
+
+`;
+
+conteudo.appendChild(div);
+
 });
 }
+
+function mostrarMes(mes){
+document.querySelectorAll("#conteudo > div").forEach(d=>d.classList.add("hidden"));
+document.getElementById("mes-"+mes).classList.remove("hidden");
 }
 
-render();
+function calcular(mes){
 
-if("serviceWorker" in navigator){
-navigator.serviceWorker.register("service-worker.js");
+const totalText = document.getElementById("total-"+mes).innerText;
+const total = parseFloat(totalText.replace("R$",""));
+
+const porc = parseFloat(document.getElementById("porc-"+mes).value);
+
+if(isNaN(porc)){
+alert("Digite a porcentagem");
+return;
 }
+
+const comissao = total * porc / 100;
+
+document.getElementById("comissao-"+mes).innerText = "R$ " + comissao.toFixed(2);
+}
+
 </script>
 
 </body>
