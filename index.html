@@ -189,18 +189,18 @@ to{opacity:1;transform:translateY(0);}
 
 <body>
 
-<header>ðŸ“Š Planilha Financeira</header>
+<header>Planilha Financeira</header>
 
 <nav>
 <button class="active" onclick="showPage('entrada',event)"><span>Entrada</span></button>
-<button onclick="showPage('relatorio',event)"><span>RelatÃ³rios</span></button>
+<button onclick="showPage('relatorio',event)"><span>Relatórios</span></button>
 </nav>
 
 <div class="container" id="entrada">
 
-<h2>Novo LanÃ§amento</h2>
+<h2>Novo Lançamento</h2>
 
-<label>MÃªs/Ano</label>
+<label>Mês/Ano</label>
 <input type="month" id="mesAno">
 
 <label>Valor</label>
@@ -212,7 +212,7 @@ to{opacity:1;transform:translateY(0);}
 
 <div class="container hidden" id="relatorio">
 
-<h2>RelatÃ³rios</h2>
+<h2>Relatórios</h2>
 
 <div id="abas"></div>
 <div id="conteudo"></div>
@@ -301,7 +301,7 @@ div.innerHTML=`
 
 <thead>
 <tr>
-<th>MÃªs</th>
+<th>Mês</th>
 <th>Valor</th>
 </tr>
 </thead>
@@ -318,7 +318,7 @@ ${linhas}
 </tr>
 
 <tr>
-<td>ComissÃ£o (%)</td>
+<td>Comissão (%)</td>
 <td>
 <input type="number" id="porc-${mes}" placeholder="%">
 <button onclick="calcular('${mes}')">Calcular</button>
@@ -326,7 +326,7 @@ ${linhas}
 </tr>
 
 <tr>
-<td>Valor da ComissÃ£o</td>
+<td>Valor da Comissão</td>
 <td id="comissao-${mes}">-</td>
 </tr>
 
