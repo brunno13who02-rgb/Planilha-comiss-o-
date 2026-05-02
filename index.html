@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planilha Financeira</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+<style>
+body{font-family:sans-serif;background:#0f172a;color:white;text-align:center;padding:20px}
+input,button{padding:10px;margin:10px;border-radius:8px;border:none}
+button{background:#6366f1;color:white}
+</style>
+</head>
+<body>
+
+<h1>📊 Planilha Financeira</h1>
+
+<input type="month" id="mes">
+<input type="number" id="valor" placeholder="Valor">
+<button onclick="salvar()">Salvar</button>
+
+<h2>Registros</h2>
+<ul id="lista"></ul>
+
+<script>
+let dados = JSON.parse(localStorage.getItem("dados") || "{}");
+
+function salvar(){
+const mes = document.getElementById("mes").value;
+const valor = parseFloat(document.getElementById("valor").value);
+
+if(!mes || isNaN(valor)) return alert("Preencha");
+
+if(!dados[mes]) dados[mes]=[];
+dados[mes].push(valor);
+
+localStorage.setItem("dados", JSON.stringify(dados));
+render();
+}
+
+function render(){
+const lista = document.getElementById("lista");
+lista.innerHTML="";
+for(let mes in dados){
+dados[mes].forEach(v=>{
+lista.innerHTML += `<li>${mes} - R$ ${v}</li>`;
+});
+}
+}
+
+render();
+
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+</body>
+</html>
