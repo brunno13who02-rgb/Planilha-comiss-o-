@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Açaí Pro |Dashboard Premium</title>
+<title>Açaí Pro | Dashboard Premium</title>
 
 <style>
 :root {
@@ -92,23 +92,32 @@ input,select{
 }
 
 .btn-p{
-    width:100%;
-    padding:14px;
+    padding:10px 14px;
     border:none;
-    border-radius:12px;
+    border-radius:10px;
     background:linear-gradient(135deg,var(--accent),#4f46e5);
     color:white;
     font-weight:bold;
     cursor:pointer;
 }
 
+.btn-full{
+    width:100%;
+    padding:14px;
+}
+
 .btn-del{
     background:rgba(239,68,68,.1);
     border:1px solid rgba(239,68,68,.2);
     color:var(--danger);
-    padding:8px 12px;
-    border-radius:8px;
+    padding:10px 14px;
+    border-radius:10px;
     cursor:pointer;
+}
+
+.actions{
+    display:flex;
+    gap:8px;
 }
 
 table{
@@ -208,7 +217,7 @@ td:last-child{
 <input id="est-qtd" type="number" placeholder="Quantidade">
 </div>
 
-<button class="btn-p" onclick="addEstoque()">Adicionar</button>
+<button class="btn-p btn-full" onclick="addEstoque()">Adicionar</button>
 </div>
 
 <div class="card">
@@ -235,7 +244,7 @@ td:last-child{
 R$ <span id="custo-total">0.00</span>
 </div>
 
-<button class="btn-p" onclick="limparFicha()">
+<button class="btn-p btn-full" onclick="limparFicha()">
 Limpar Ficha
 </button>
 
@@ -275,7 +284,7 @@ Limpar Ficha
 
 </div>
 
-<button class="btn-p" onclick="addFinanceiro()">
+<button class="btn-p btn-full" onclick="addFinanceiro()">
 Salvar
 </button>
 
@@ -508,6 +517,66 @@ function addFinanceiro(){
     alert('Salvo com sucesso');
 }
 
+function editarVenda(id){
+
+    const venda = db.vendas.find(v => v.id == id);
+
+    const cliente = prompt('Nome do comprador:', venda.cliente);
+    if(cliente === null) return;
+
+    const desc = prompt('Descrição:', venda.desc);
+    if(desc === null) return;
+
+    const qtd = prompt('Quantidade:', venda.qtd);
+    if(qtd === null) return;
+
+    const total = prompt('Valor:', venda.total);
+    if(total === null) return;
+
+    venda.cliente = cliente;
+    venda.desc = desc;
+    venda.qtd = parseFloat(qtd);
+    venda.total = parseFloat(total);
+
+    save();
+}
+
+function excluirVenda(id){
+
+    if(confirm('Deseja excluir esta venda?')){
+
+        db.vendas = db.vendas.filter(v => v.id != id);
+
+        save();
+    }
+}
+
+function editarDespesa(id){
+
+    const despesa = db.despesas.find(d => d.id == id);
+
+    const desc = prompt('Descrição:', despesa.desc);
+    if(desc === null) return;
+
+    const total = prompt('Valor:', despesa.total);
+    if(total === null) return;
+
+    despesa.desc = desc;
+    despesa.total = parseFloat(total);
+
+    save();
+}
+
+function excluirDespesa(id){
+
+    if(confirm('Deseja excluir esta despesa?')){
+
+        db.despesas = db.despesas.filter(d => d.id != id);
+
+        save();
+    }
+}
+
 function trocarRelatorio(tipo){
 
     document.getElementById('rel-vendas').style.display =
@@ -598,6 +667,7 @@ function render(){
         <th>Descrição</th>
         <th>Qtd</th>
         <th>Valor</th>
+        <th>Ações</th>
     </tr>`;
 
     vendas.forEach(v=>{
@@ -610,6 +680,19 @@ function render(){
             <td style="color:var(--success)">
             R$ ${v.total.toFixed(2)}
             </td>
+            <td>
+                <div class="actions">
+                    <button class="btn-p"
+                    onclick="editarVenda(${v.id})">
+                    Editar
+                    </button>
+
+                    <button class="btn-del"
+                    onclick="excluirVenda(${v.id})">
+                    Excluir
+                    </button>
+                </div>
+            </td>
         </tr>`;
     });
 
@@ -620,6 +703,7 @@ function render(){
     <tr>
         <th>Descrição</th>
         <th>Valor</th>
+        <th>Ações</th>
     </tr>`;
 
     despesas.forEach(d=>{
@@ -629,6 +713,19 @@ function render(){
             <td>${d.desc}</td>
             <td style="color:var(--danger)">
             R$ ${d.total.toFixed(2)}
+            </td>
+            <td>
+                <div class="actions">
+                    <button class="btn-p"
+                    onclick="editarDespesa(${d.id})">
+                    Editar
+                    </button>
+
+                    <button class="btn-del"
+                    onclick="excluirDespesa(${d.id})">
+                    Excluir
+                    </button>
+                </div>
             </td>
         </tr>`;
     });
